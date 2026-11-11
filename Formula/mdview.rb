@@ -19,7 +19,6 @@ class Mdview < Formula
   desc "Terminal Markdown viewer with history and live reload"
   homepage "https://github.com/cbuchler/mdview"
   url "https://github.com/cbuchler/mdview/archive/v0.3.0.tar.gz"
-  version "0.3.0"
   sha256 "4f3c632102bae8b8e3c5291ae9f899219189e5b8d1b5cea5fda15c894b695e31"
   license "GPL-3.0-or-later"
 
