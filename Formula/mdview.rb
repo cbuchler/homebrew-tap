@@ -22,6 +22,14 @@ class Mdview < Formula
   sha256 "4f3c632102bae8b8e3c5291ae9f899219189e5b8d1b5cea5fda15c894b695e31"
   license "GPL-3.0-or-later"
 
+  bottle do
+    root_url "https://github.com/cbuchler/homebrew-tap/releases/download/mdview-0.3.0"
+    sha256                               arm64_tahoe:  "f1f48ca9619126678723b6662b79faae0c147489b492be2b18b54560ef1d3ec5"
+    sha256 cellar: :any_skip_relocation, tahoe:        "3318c8f9559b5b33850dc3fc1877d08114dbd0e4c3e21b3beba0edb22987f8a9"
+    sha256 cellar: :any_skip_relocation, arm64_linux:  "909e9332130064697088580c8382961b1535ba06ba7a1ba988ca42b78a07939d"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "df54f39c999497cac9f7a321d2923434f4c845b90320b66c507baf99b46fa806"
+  end
+
   depends_on macos: :tahoe if OS.mac?
   depends_on MdviewLinuxToolsRequirement if OS.linux?
 
