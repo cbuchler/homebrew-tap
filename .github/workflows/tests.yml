@@ -36,6 +36,9 @@ jobs:
       - name: Install Linux host requirements
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y bubblewrap gcc
+      - name: Check Linux executable requirements
+        if: runner.os == 'Linux'
+        run: brew ruby test/requirement.rb "$(brew --repository cbuchler/tap)/Formula/mdview.rb"
       - name: Build and test source installation
         run: |
           brew install --build-bottle cbuchler/tap/mdview
@@ -63,6 +66,14 @@ jobs:
           fi
           PATH="$tools" "$binary" --no-history "$RUNNER_TEMP/document.md" > "$RUNNER_TEMP/bottle.txt"
           grep -q 'Protected rendering works' "$RUNNER_TEMP/bottle.txt"
+          if [ "$RUNNER_OS" = Linux ]; then
+            if XDG_RUNTIME_DIR="$tools/no-session" DBUS_SESSION_BUS_ADDRESS="unix:path=$tools/no-bus" \
+              PATH="$tools" "$binary" --no-history "$RUNNER_TEMP/document.md" > "$RUNNER_TEMP/refused.txt" 2> "$RUNNER_TEMP/refused.err"; then
+              echo 'Rendering unexpectedly succeeded without a systemd user session' >&2
+              exit 1
+            fi
+            test ! -s "$RUNNER_TEMP/refused.txt"
+          fi
           test -f "$(brew --prefix)/share/zsh/site-functions/_mdview"
           test -f "$(brew --prefix)/share/fish/vendor_completions.d/mdview.fish"
           test -f "$(brew --prefix)/etc/bash_completion.d/mdview"
