@@ -19,6 +19,12 @@ jobs:
       HOMEBREW_NO_AUTO_UPDATE: 1
       HOMEBREW_NO_INSTALL_FROM_API: 1
     steps:
+      - name: Remove unused Azure CLI before Intel Homebrew setup
+        if: matrix.os == 'macos-26-intel'
+        run: |
+          if brew list --formula --versions azure-cli >/dev/null 2>&1; then
+            brew uninstall --formula --force --ignore-dependencies azure-cli
+          fi
       - uses: Homebrew/actions/setup-homebrew@63a2d4d8d4193eab3e62b1b782ff3ab8408f5b29
       - name: Install Linux host requirements
         if: runner.os == 'Linux'
