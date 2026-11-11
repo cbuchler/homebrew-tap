@@ -1,0 +1,48 @@
+name: Verify published bottles
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+jobs:
+  install:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-26.04, ubuntu-26.04-arm, macos-26, macos-26-intel]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_FROM_API: 1
+    steps:
+      - uses: Homebrew/actions/setup-homebrew@63a2d4d8d4193eab3e62b1b782ff3ab8408f5b29
+      - name: Install Linux host requirements
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y bubblewrap
+      - name: Install and test the public bottle
+        run: |
+          brew install --force-bottle cbuchler/tap/mdview
+          brew info --json=v2 cbuchler/tap/mdview > "$RUNNER_TEMP/receipt.json"
+          jq -e '.formulae[0].installed[0].poured_from_bottle == true' "$RUNNER_TEMP/receipt.json"
+          mdview --version
+          brew test --verbose cbuchler/tap/mdview
+          printf '# Public bottle\n\nProtected rendering works.\n' > "$RUNNER_TEMP/document.md"
+          binary="$(brew --prefix)/bin/mdview"
+          tools=$(mktemp -d)
+          trap 'rm -rf "$tools"' EXIT
+          if [ "$RUNNER_OS" = Linux ]; then
+            for tool in bwrap systemd-run; do ln -s "$(command -v "$tool")" "$tools/$tool"; done
+          else
+            for tool in bash env; do ln -s "$(command -v "$tool")" "$tools/$tool"; done
+          fi
+          PATH="$tools" "$binary" --no-history "$RUNNER_TEMP/document.md" > "$RUNNER_TEMP/rendered.txt"
+          grep -q 'Protected rendering works' "$RUNNER_TEMP/rendered.txt"
+          test -f "$(brew --prefix)/share/zsh/site-functions/_mdview"
+          test -f "$(brew --prefix)/share/fish/vendor_completions.d/mdview.fish"
+          test -f "$(brew --prefix)/etc/bash_completion.d/mdview"
+          brew uninstall cbuchler/tap/mdview
+          test -z "$(brew list --versions mdview)"
