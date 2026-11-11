@@ -39,6 +39,8 @@ jobs:
       - name: Check Linux executable requirements
         if: runner.os == 'Linux'
         run: brew ruby test/requirement.rb "$(brew --repository cbuchler/tap)/Formula/mdview.rb"
+      - name: Audit the release formula
+        run: brew audit --skip-style cbuchler/tap/mdview
       - name: Build and test source installation
         run: |
           brew install --build-bottle cbuchler/tap/mdview
