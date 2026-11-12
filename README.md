@@ -1,7 +1,24 @@
 # Charles Buchler's Homebrew tap
 
 Homebrew packages for [mdview](https://github.com/cbuchler/mdview).
-The first formula and bottles are being prepared.
+
+```sh
+brew install cbuchler/tap/mdview
+brew upgrade cbuchler/tap/mdview
+```
+
+Prebuilt bottles are available for Linux and macOS, on x64 and ARM64. They do
+not need Node or Bun installed. Source builds use pinned, checksummed build tools.
+Use `brew uninstall mdview` to remove the package.
+
+Linux needs working Bubblewrap namespaces, a reachable systemd user manager,
+and cgroup v2 memory/task controls. Installation checks executable availability;
+mdview checks protection when rendering. See the
+[runtime requirements](https://github.com/cbuchler/mdview#limits-and-failure-recovery).
+
+The [v0.3.0 public bottle checks](https://github.com/cbuchler/homebrew-tap/actions/runs/43123350705)
+passed on Ubuntu 26.04 and macOS 26, for both architectures. Other OS versions
+are not validated. Cross-version upgrade validation starts with the next release.
 
 ## Maintainers
 
