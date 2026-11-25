@@ -1,6 +1,13 @@
 # Charles Buchler's Homebrew tap
 
-Homebrew packages for [mdview](https://github.com/cbuchler/mdview).
+Install the performance diagnostic or the file-watch manager with Homebrew.
+
+```sh
+brew install cbuchler/tap/slow
+brew install cbuchler/tap/fsw
+```
+
+## mdview
 
 ```sh
 brew install cbuchler/tap/mdview

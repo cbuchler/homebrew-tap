@@ -1,6 +1,11 @@
 name: Native bottles
 on:
   pull_request:
+    paths-ignore:
+      - "Formula/fsw.rb"
+      - "Formula/slow.rb"
+      - ".github/workflows/cli.yml"
+      - "README.md"
   workflow_dispatch:
 permissions:
   contents: read
