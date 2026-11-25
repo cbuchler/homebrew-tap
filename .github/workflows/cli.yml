@@ -1,0 +1,29 @@
+name: CLI formulae
+on:
+  pull_request:
+    paths:
+      - "Formula/fsw.rb"
+      - "Formula/slow.rb"
+      - ".github/workflows/cli.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  install:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: Homebrew/actions/setup-homebrew@63a2d4d8d4193eab3e62b1b782ff3ab8408f5b29
+      - name: Install and test both formulae
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HOMEBREW_NO_AUTO_UPDATE: 1
+        run: |
+          tap=$(brew --repository cbuchler/tap)
+          git -C "$tap" fetch origin "$HEAD_SHA"
+          git -C "$tap" checkout --detach "$HEAD_SHA"
+          brew install cbuchler/tap/slow cbuchler/tap/fsw
+          brew test cbuchler/tap/slow
+          brew test cbuchler/tap/fsw
